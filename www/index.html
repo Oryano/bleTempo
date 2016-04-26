@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+          <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1,  target-densitydpi=device-dpi" />
+
+        <link href="css/bootstrap.min.css" rel="stylesheet">   <!-- Bootstrap -->
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Touch time</title>
+    </head>
+    <body>
+
+
+        <div class="app container-fluid">
+          <div class="row">
+            <div id="appName" class= "col-xs-12">
+              <h1>White Rabbit</h1>
+            </div>
+
+            <!-- lights-block -->
+            <h4 class="col-xs-3">LEDs</h4>
+            <div id="toggle" class="btn-group btn-toggle col-xs-9 pull-right">
+              <button class="btn btn-sm btn-default">ON</button>
+              <button class="btn btn-sm btn-info active">OFF</button>
+            </div>
+          <!--device-block: -->
+              <div id="startPage" class= "col-xs-12">
+                <div id="deviceBlockLeft" class= "col-xs-6">
+                  <button id="refreshButton" class="btn btn-lg btn-info">Scan</button>
+                </div>
+
+                <ul id="deviceList" class="col-xs-6">
+                  <!-- <il>fake device1</br> device ID: 123 </br> RSSI 90</il>
+                  <il>fake device2</br> device ID: 123 </br> RSSI 90</il>
+                  <il>fake device3</br> device ID: 123 </br> RSSI 90</il>
+                  <il>fake device4</br> device ID: 123 </br> RSSI 90</il>
+                  <il>fake device5</br> device ID: 123 </br> RSSI 90</il>
+                  <il>fake device6</br> device ID: 123 </br> RSSI 90</il>
+                  <il>fake device1</br> device ID: 123 </br> RSSI 90</il> -->
+                </ul>
+            </div>
+
+          <div id="hapticStory-block" class="col-xs-12">
+            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+
+              <!-- Wrapper for slides -->
+              <div class="carousel-inner" role="listbox">
+                <div class="item active">
+                  <h2>Moving point</h2>
+                </div>
+
+                <div class="item">
+                  <h2>scattered vibes</h2>
+                </div>
+
+                <div class="item">
+                  <h2>short ticks</h2>
+                </div>
+
+                <div class="item">
+                  <h2>Math</h2>
+                </div>
+              </div>
+
+              <!-- Left and right controls -->
+              <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+              </a>
+              <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+              </a>
+            </div>
+          </div>
+
+
+          <div id="freq_block" class="col-xs-12">
+            <!-- <input id="ex4" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="-3" data-slider-orientation="vertical"/> -->
+            <form method="post" action="demoform.asp">
+              <label for="Frequency">Frequency:</label>
+              <input type="range" name="Frequency" id="Frequency" value="5" min="1" max="60">
+            </form>
+          </div>
+
+
+          <div id="batteryState" class="col-xs-12">
+            <img src="assets/battery_mask.png" alt="battery" width="100%">
+          </div>
+
+          <div id="alterTime" class="col-xs-12">
+            <form method="post" action="demoform.asp">
+              <label for="minuteUnit">Minute:</label>
+              <input type="range" name="minuteUnit" id="minuteUnit" value="1" min=".5" max="2">
+            </form>
+          </div>
+
+          <div id="testDeviceDiv" class="col-xs-12">
+            <button id="testDevice" type="button" name="button" class="btn btn-lg btn-default col-xs-12">TEST DEVICE</button>
+          </div>
+
+          <div id="pushToDeviceDiv" class="col-xs-12">
+            <button id="pushToDevice" type="button" name="button" class="btn btn-lg btn-info col-xs-12">PUSH TO DEVICE</button>
+          </div>
+
+            <div id="connectedPage">
+                <div id="resultDiv"></div>
+                <button id="randomButton">Random Color</button>
+                <button id="disconnectButton">Disconnect</button>
+            </div>
+        </div>
+      </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+              console.log('doc ready')
+              app.initialize();
+            })
+
+        </script>
+    </body>
+</html>
