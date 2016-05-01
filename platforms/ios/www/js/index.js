@@ -127,15 +127,41 @@ var app = {
 		var hours = date.getHours();
 		var minutes = date.getMinutes();
 
-		var data = new Uint8Array(4);
-		data[0] = hours;
-		data[1] = minutes;
-		// data[2] = digit_3;
-		// data[3] = digit_4;
-		if(hours.toString().length == 1) hours = "" + 0 + hours;
-		if(minutes.toString().length == 1) minutes = "" + 0 + minutes;
+		//convert to ms:
+		var completeTime = (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + ""; //"" makes it a string
+
+		while(completeTime.length < 8){ //mke sure 8 digits (add zeros)
+			completeTime = "0" + completeTime;
+		};
+
+		//slice string to 3 parts
+		var digit_12 = completeTime.slice(0,2); //start to end pos
+		var digits_345 = completeTime.slice(2,5);
+		var digits_678 = completeTime.slice(5,8);
+
+		//var data = new Uint8Array(4); //change this to unsigned long
+		var data = new Uint8Array(3); //9 bits for max of 86,399,000
+		//highest we can get is 23:59 based on: 24*60*60*1000-1000 = 86,399,000
+
+		/////////-----------------------first digit
+	  data[0] = digit_12;  //0 to 86
+
+	  //////---------------------- 234 digits
+		//devide each part to by the corrisponding amoutof bits
+		var fullBits = Math.floor(digits_345 / 255);
+		//mudule the spliced number in 255
+		var restBit = digits_678 % 255;
+
+		data[1] = fullBits;  //multiply by 255 and add data[2] in arduino side
+		data[2] = restBit;
+
+		//more data to be send from phone:
+		var pattern = "Moving point";
+		var freq = "5 min";
+		var bool = "No";
 
     	// send data to the bean
+			console.log(data);
 		ble.write(deviceId, scratchServiceUUID, scratchCharacteristicUUID, data.buffer, app.onSuccess(data), app.onError);
 	},
 
@@ -157,6 +183,6 @@ var app = {
 		alert("ERROR: " + reason); // real apps should use notification.alert
 	},
 	onSuccess: function(data){
-    alert("Time stamp sent: " + data[0] + " : " + data[1] \n "Pattern: "+pattern[i]+ \n "Frequency: "+freq[i] \n "Time manipulation: "+ bool);
+    alert("Time stamp in ms: " + data[0] + data[1] + data[2]+"\n"+ "Pattern: "+"pattern"+ "\n"+"Frequency: "+"freq"+"\n"+"Time manipulation: "+ "bool");
 	}
 };

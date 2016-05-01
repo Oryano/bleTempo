@@ -60,20 +60,43 @@ function toggleButton(){
 
 }
 
+console.log("create app")
+
 var app = {
 
 	initialize: function() {
 		this.bindEvents(); //binding event listeners to DOM in the app
 		connectedPage.hidden = true; //hides the HTML elements for the second page
 	},
+
 	bindEvents: function() {
+
+			var that = this;
+
+			function callSendData(_test){
+
+				that.sendData(_test)
+
+			};
+
+
 		document.addEventListener('deviceready', this.onDeviceReady, false); //runs onDeviceReady function whenever the device is ready (loaded)
 		refreshButton.addEventListener('touchstart', this.refreshDeviceList, false); //on touch of the Refresh button, runs refreshDeviceList function
 		deviceList.addEventListener('touchstart', this.connect, false); //on touch of device list, connect to device
 		//make randomButton my new button pushToDevice!!1
-		pushToDevice.addEventListener('touchstart', this.sendData, false);
+		pushToDevice.addEventListener('touchstart',this.SendData,false);
+		//pushToDevice.addEventListener('touchstart', function(){
+			// 	console.log("push")
+			// that.SendData(false);
+			// },false);
+		testDevice.addEventListener('touchstart', function(){
+			console.log("test")
+				that.SendData(true);
+				},false);
 		disconnectButton.addEventListener('touchstart', this.disconnect, false);
 	},
+
+
 
 	onDeviceReady: function() {
 		app.refreshDeviceList();
@@ -120,6 +143,7 @@ var app = {
 		ble.connect(deviceId, onConnect, app.onError);
 	},
 	sendData: function() { //a function that calc random RGB and sends to device.-
+		console.log("SEDNDATA function");
     var deviceId = event.target.dataset.deviceId; // first find out device ID
 		//then calc time
 		var date = new Date();
@@ -127,15 +151,49 @@ var app = {
 		var hours = date.getHours();
 		var minutes = date.getMinutes();
 
-		var data = new Uint8Array(4);
-		data[0] = hours;
-		data[1] = minutes;
-		// data[2] = digit_3;
-		// data[3] = digit_4;
-		if(hours.toString().length == 1) hours = "" + 0 + hours;
-		if(minutes.toString().length == 1) minutes = "" + 0 + minutes;
+		//convert to ms:
+		var completeTime = (hours * 60 * 60 * 1000) + (minutes * 60 * 1000) + ""; //"" makes it a string
+
+		while(completeTime.length < 8){ //mke sure 8 digits (add zeros)
+			completeTime = "0" + completeTime;
+		};
+
+		//slice string to 3 parts
+		var digit_12 = completeTime.slice(0,2); //start to end pos
+		var digits_345 = completeTime.slice(2,5);
+		var digits_678 = completeTime.slice(5,8);
+
+		//var data = new Uint8Array(4); //change this to unsigned long
+		var data = new Uint8Array(4); //9 bits for max of 86,399,000
+		//highest we can get is 23:59 based on: 24*60*60*1000-1000 = 86,399,000
+
+		/////////-----------------------first digit
+	  data[0] = digit_12;  //0 to 86
+
+	  //////---------------------- 234 digits
+		//devide each part to by the corrisponding amoutof bits
+		var fullBits = Math.floor(digits_345 / 255);
+		//mudule the spliced number in 255
+		var restBit = digits_678 % 255;
+
+		data[1] = fullBits;  //multiply by 255 and add data[2] in arduino side
+		data[2] = restBit;
+		// if(_test){
+		// 	data[3] = 1; //test always off here
+		// }else{
+		// 	data[3] = 0; //test always off here
+		// }
+
+
+		//more data to be send from phone:
+		var testButton = 1;
+		var pattern = "Moving point";
+		var freq = "5 min";
+		var bool = "No";
 
     	// send data to the bean
+		console.log(data);
+		console.log("im here!!!");
 		ble.write(deviceId, scratchServiceUUID, scratchCharacteristicUUID, data.buffer, app.onSuccess(data), app.onError);
 	},
 
@@ -157,6 +215,6 @@ var app = {
 		alert("ERROR: " + reason); // real apps should use notification.alert
 	},
 	onSuccess: function(data){
-    alert("Time stamp sent: " + data[0] + " : " + data[1] \n "Pattern: "+pattern[i]+ \n "Frequency: "+freq[i] \n "Time manipulation: "+ bool);
+    alert("Time stamp in ms: " + data[0] + data[1] + data[2] +"\n"+ "Pattern: "+"pattern"+ "\n"+"Frequency: "+"freq"+"\n"+"Time manipulation: "+ "bool");
 	}
 };

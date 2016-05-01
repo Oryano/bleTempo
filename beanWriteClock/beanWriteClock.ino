@@ -1,9 +1,15 @@
 
 String beanName = "Tempo";
 const uint8_t timeScratch = 1; //what is LED scrach? what is 1?
-bool printTime = false;
+bool calcTime = false;
 ScratchData receivedData; //a var type that holds the data received
 unsigned long timeFromPhone;
+unsigned long finalString;
+unsigned long currentMillis;
+unsigned long beanTime;
+int hours;
+int minutes;
+long count = 0; //for millis update
 
 void setup() {
   Serial.begin(57600);
@@ -20,13 +26,17 @@ void setup() {
 
 
 void loop() {
-
+  count++;
+  currentMillis = millis(); //+ (count*10000);
+  
+  //Serial.println(currentMillis);
+  //delay(100);
 
 
   bool connected = Bean.getConnectionState();
   if (connected) {
-    Serial.print("Tempo device connected");
-    printTime = true;
+    Serial.println("Tempo device connected");
+    calcTime = true;
     
 
     //Update time from phone
@@ -36,18 +46,23 @@ void loop() {
 
   }
 
-  if (printTime) {
-        
+  if (calcTime) {
     String one = String(receivedData.data[0]);
     String two = String((receivedData.data[1] * 255) + receivedData.data[2]);
     String three = "000";
     String finalString = one + two + three;
-    String test = "1234556789";
-    timeFromPhone = long("1234556789");  //long converts to a long number
-    Serial.println(timeFromPhone);
-     long number = timeFromPhone + 200;
-     Serial.println(number);
-     
+    
+    timeFromPhone = finalString.toInt();  //converts to a long number
+    //Serial.println(timeFromPhone);
+    beanTime = timeFromPhone + currentMillis % 86399000; //use REMINDER from 24 HOURS ms to reset    
+    hours = beanTime / 60 / 60 / 1000;
+    minutes = (((beanTime / 60 / 60) % 1000)*60)/1000 ;
+    
+    Serial.print(hours);
+    Serial.print(":");
+    Serial.println(minutes);
+    Serial.println("----");
+        
   }
 
 
@@ -57,13 +72,9 @@ void loop() {
   //    uint8_t redLed = receivedData.data[0];
   //    uint8_t greenLed = receivedData.data[1];
 
-  if (receivedData.data[0] != 0) {
-    Bean.setLed(255, 20, 20);
-  }
-
   // Turn LED off and put to sleep.
   //Bean.setLed(0, 0, 0);
-  Bean.sleep(0xFFFFFFFF);
+  //Bean.sleep(10000);
 }
 
 
