@@ -38,10 +38,8 @@ void loop() {
     Serial.println("Tempo device connected");
     calcTime = true;
     
-
     //Update time from phone
     receivedData = Bean.readScratchData(timeScratch);
-
     //uint8_t hours = receivedData.data[0];
 
   }
@@ -63,6 +61,14 @@ void loop() {
     Serial.println(minutes);
     Serial.println("----");
         
+  }
+
+  if (receivedData.data[3] == 1){ //if testButton was tapped - make a crazy pattern
+    //pattern here
+    
+    Bean.setLed(30, 200, 255);
+    delay(1000);
+    Bean.setLed(0, 0, 0);
   }
 
 
